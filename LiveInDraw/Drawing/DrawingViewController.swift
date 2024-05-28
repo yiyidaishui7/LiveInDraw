@@ -11,8 +11,8 @@ import UIKit
 
 class DrawingViewController: UIViewController, DrawingImageViewDelegate {
 
-    let emojiBaseSize: CGFloat = 12 // Base font size for the emoji
-    var drawingModel: DrawingModel? // Model passed to the AR view controller after drawing
+    let emojiBaseSize: CGFloat = 12 // emoji基础大小
+    var drawingModel: DrawingModel? // 保存绘图数据的模型，在绘图后传递给AR view controller
     let emojiPalettePopover = EmojiPalettePopover()
 
     @IBOutlet weak var drawingImageView: DrawingImageView!
@@ -34,6 +34,7 @@ class DrawingViewController: UIViewController, DrawingImageViewDelegate {
         drawingModel = DrawingModel(canvasSize: drawingImageView.frame.size)
     }
 
+    //
     func drewEmoji(at point: CGPoint, with size: CGFloat) {
         DispatchQueue.main.async { // Don't block on the touch update calls
             guard let point = self.createDrawingPoint(at: point, with: size) else {
@@ -64,6 +65,21 @@ class DrawingViewController: UIViewController, DrawingImageViewDelegate {
 
     @IBAction func didPressClearButton(_ sender: Any) {
         drawingModel?.clearPoints()
+        clearDrawing()
+
+    }
+
+    @IBAction func didPressRedoButton(_ sender: Any) {
+        drawingModel?.redo()
+        redrawPoints()
+    }
+    
+    @IBAction func didPressUndoButton(_ sender: Any) {
+        drawingModel?.undo()
+        redrawPoints()
+    }
+    
+    private func clearDrawing(){
         for subview in view.subviews {
             if let label = subview as? UILabel {
                 label.removeFromSuperview()
@@ -71,23 +87,16 @@ class DrawingViewController: UIViewController, DrawingImageViewDelegate {
         }
     }
 
-    @IBAction func didPressRedoButton(_ sender: Any) {
-        drawingModel?.clearPoints()
-        for subview in view.subviews {
-            if let label = subview as? UILabel {
-                label.removeFromSuperview()
-            }
+
+    private func redrawPoints() {
+        clearDrawing()
+        guard let points = drawingModel?.points else { return }
+        for point in points {
+            self.view.addSubview(self.convertDrawingPointToLabel(drawingPoint: point))
         }
     }
-    
-    @IBAction func didPressUndoButton(_ sender: Any) {
-        drawingModel?.clearPoints()
-        for subview in view.subviews {
-            if let label = subview as? UILabel {
-                label.removeFromSuperview()
-            }  
-        }
-    }
+
+
     // MARK: - Private methods
 
     private func createDrawingPoint(at point: CGPoint, with size: CGFloat) -> DrawingPoint? {
