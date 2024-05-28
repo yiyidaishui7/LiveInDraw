@@ -6,7 +6,7 @@
 //
 //  Copyright © 2024 AcroMace. All rights reserved.
 //
-
+//通过 AR 技术在现实世界中放置和显示表情符号
 import UIKit
 import SpriteKit
 import ARKit
@@ -16,12 +16,12 @@ class CameraViewController: UIViewController {
     static let storyboard = "CameraViewController"
 
     var drawingModel: DrawingModel?
-    private var scene: Scene?
-    private var emojiSize: CGFloat = 32
+    private var scene: Scene?  //储存AR场景
+    private var emojiSize: CGFloat = 32  //表情符号大小
 
-    @IBOutlet var sceneView: ARSKView!
+    @IBOutlet var sceneView: ARSKView! //显示AR场景
 
-    private var placeButton: UIBarButtonItem?
+    private var placeButton: UIBarButtonItem?  //在界面放置表情符号
     private var emojiSizeTextView = UITextView()
     private var spawnDistanceTextView = UITextView()
     private var emojiSpacingScaleTextView = UITextView()
@@ -52,17 +52,17 @@ class CameraViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        // Create a session configuration
+        // Create a session configuration 创建
         let configuration = ARWorldTrackingConfiguration()
 
-        // Run the view's session
+        // Run the view's session 运行
         sceneView.session.run(configuration)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        // Pause the view's session
+        // Pause the view's session 暂停
         sceneView.session.pause()
     }
 
